@@ -1,14 +1,23 @@
- const express = require('express');
+const express = require("express");
+const {adminAuth,userAuth} = require("./middlewares/auth")
 
- const app = express();
+const app = express();
 
-  app.use("/test",(req,res)=>{
-    res.send("Hello Form the test");
- });
- app.use("/",(req,res)=>{
-    res.send("Hello Form the daseboard");
+app.use("/admin",adminAuth);
+
+app.get("/admin/data", (req, res) => {
+  res.send("All Data sent");
+});
+
+app.get("/admin/delete", (req, res) => {
+  res.send("All Data deleted");
+});
+
+  app.get("/user/data", adminAuth ,(req,res)=>{
+   //  console.log(req.params);
+    res.send("Helloo jii");
  });
 
- app.listen(6969, ()=>{
-    console.log("Sucessfully");
- });
+app.listen(6969, () => {
+  console.log("Sucessfully");
+});
