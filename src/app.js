@@ -6,17 +6,11 @@ const app = express();
 const {connectDb} = require("./config/database");
 const User = require("./models/user");
 
-
+app.use(express.json());
 app.post("/singup",async (req,res)=>{
 
-   const user = new User({
-      firstName: "land",
-      lastName: "Kumar",
-      emailId: "land1234@gmail.com",
-      password: "randikiChut@123",
-   
-
-   });
+   // console.log(req.body);
+   const user = new User(req.body);
 
    try{
       await user.save();
