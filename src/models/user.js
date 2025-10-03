@@ -44,7 +44,12 @@ const mongoose= require('mongoose');
          }
     },
     skills:{
-     type:String,
+     type:[String],
+     validate(value){
+          if(value.length>5){
+               throw new Error("You can pass min 5 skills");
+          }
+     }
     },
     bio:{
      type:String,

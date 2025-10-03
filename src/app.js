@@ -38,38 +38,41 @@ app.delete("/delete", async (req, res) => {
   const userId = req.body._Id;
 
   try {
-    const user = await User.findOneAndDelete({_Id: userId});
-   
-      res.status(200).send("Deleted succefully");
-  
-    }
-   catch (err) {
+    const user = await User.findOneAndDelete({ _Id: userId });
+
+    res.status(200).send("Deleted succefully");
+  } catch (err) {
     res.send("Something went wrong");
   }
 });
 
+//Update
+app.patch("/update/:userId", async (req, res) => {
+  const { userId, updateData } = req.body;
 
-app.patch("/update", async (req,res)=>{
-   const {userId, updateData }= req.body;
-   
-   try{
-   const updateUser =  await User.findByIdAndUpdate(userId,updateData,{runValidators:true});
-   if(updateUser){
-   res.status(200).send("SuccessFully Upadted");
+  try {
+    const updatingFeild = ["firstName", "lastName", "skills", "age", "bio"];
 
-   }else{
+    const isUpdatedAllowed = Object.keys(updateData).every((k) =>
+      updatingFeild.includes(k)
+    );
+
+    if(!isUpdatedAllowed){
+      throw new Error("Updating is not allowed");
+    }
+
+    const updateUser = await User.findByIdAndUpdate(userId, updateData, {
+      runValidators: true,
+    });
+    if (updateUser) {
+      res.status(200).send("SuccessFully Upadted");
+    } else {
       res.send("not found");
-   }
-
-   }
-   catch(err){
-      res.status(400).send("Something went Wrong");
-   }
+    }
+  } catch (err) {
+    res.status(400).send("Something went Wrong");
+  }
 });
-
-
-
-
 
 connectDb()
   .then(() => {
