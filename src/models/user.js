@@ -1,63 +1,82 @@
-const mongoose= require('mongoose');
+const mongoose = require("mongoose");
 
+var validator = require("validator");
 
- const userSchema = new mongoose.Schema({
-    firstName:{
-        type:String,
-        required : true,
-        minLength : 4,
+const userSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+      minLength: 4,
     },
-    lastName:{
-         type:String,
-         required : true,
+    lastName: {
+      type: String,
+      required: true,
+    },
+    emailId: {
+      type: String,
+      required: true,
+      lowercase: true,
+      unique: true,
+      trim: true,
 
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Incoorect Email id" + value);
+        }
+      },
     },
-    emailId:{
-         type:String,
-         required : true,
-         lowercase : true,
-         unique: true,
-         trim: true,
-    },
-    password:{
-         type:String,
-         required : true,
-
-    },
-   age:{
-   type:Number,
-   min:18, 
-//    validate(value){
-//      if(value<18){
-//           throw new Error("You are not Elebible");
-//      }
-//    }
+    password: {
+      type: String,
+      required: true,
    
-         
-    },
-    gender:{
-         type:String,
-         validate(value){
-      if(!["male","female","others"].includes(value)){
-         throw new console.error("Gender data is not valid");
-      }
-         }
-    },
-    skills:{
-     type:[String],
-     validate(value){
-          if(value.length>5){
-               throw new Error("You can pass min 5 skills");
+      validate(value){
+          if(!validator.isStrongPassword(value)){
+               throw new Error("Inavlid Url");
           }
      }
     },
-    bio:{
-     type:String,
-     default:"This is deafault bio",
+    age: {
+      type: Number,
+      min: 18,
+      //    validate(value){
+      //      if(value<18){
+      //           throw new Error("You are not Elebible");
+      //      }
+      //    }
     },
-   
-}, { timestamps: true })
+    gender: {
+      type: String,
+      validate(value) {
+        if (!["male", "female", "others"].includes(value)) {
+          throw new console.error("Gender data is not valid");
+        }
+      },
+    },
+    skills: {
+      type: [String],
+      validate(value) {
+        if (value.length > 5) {
+          throw new Error("You can pass min 5 skills");
+        }
+      },
+    },
+    bio: {
+      type: String,
+      default: "This is deafault bio",
+    },
+    photoURL:{
+     type: String,
+     default:"https://img.freepik.com/free-photo/beautiful-view-sunset-sea_23-2148019892.jpg?size=626&ext=jpg",
 
+     validate(value){
+          if(!validator.isURL(value)){
+               throw new Error("Inavlid Url");
+          }
+     }
+    },
+  },
+  { timestamps: true }
+);
 
-
-module.exports = mongoose.model("user",userSchema);
+module.exports = mongoose.model("user", userSchema);
