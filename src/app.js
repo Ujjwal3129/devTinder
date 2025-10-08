@@ -1,12 +1,17 @@
 const express = require("express");
-const { adminAuth, userAuth } = require("./middlewares/auth");
+// const { adminAuth, userAuth } = require("./middlewares/auth");
 const { validateSignUpData } = require("./utils/validation");
 const app = express();
 const { connectDb } = require("./config/database");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+var jwt = require("jsonwebtoken");
+
+const {userAuth }= require("./middlewares/auth")
 
 app.use(express.json());
+app.use(cookieParser());
 app.post("/singup", async (req, res) => {
   try {
     validateSignUpData(req);
@@ -36,19 +41,35 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("InValid Credentials");
     }
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (isPasswordValid) {
+      // const userId = res.body.id;
+      var token = jwt.sign({ _id: user._id }, "Ujjwal@123");
+
+      res.cookie("token", token);
       res.send("Login Successfully");
     } else {
       throw new Error("InValid Credentials");
     }
   } catch (err) {
-    res.status(400).send("Error!! "+err.message);
+    res.status(400).send("Error!! " + err.message);
   }
 });
 
+app.get("/profile",userAuth, async (req, res) => {
+  try {
+    
+
+    const user = req.user;
+
+    res.send(user);
+
+   
+  } catch (err) {
+    res.status(400).send("Error", +err.message);
+  }
+});
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
 
@@ -104,13 +125,14 @@ app.patch("/update/:userId", async (req, res) => {
   }
 });
 
+// ================= CONNECT DB =================
 connectDb()
   .then(() => {
-    console.log("DataBase Connection Established...");
+    console.log("✅ Database Connection Established...");
     app.listen(6969, () => {
-      console.log("Sucessfully listenin on port 6969");
+      console.log("🚀 Server running on port 6969");
     });
   })
   .catch((err) => {
-    console.error("Nott connected ");
+    console.error("❌ Database not connected");
   });
