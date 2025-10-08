@@ -41,13 +41,16 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("InValid Credentials");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
 
     if (isPasswordValid) {
       // const userId = res.body.id;
-      var token = jwt.sign({ _id: user._id }, "Ujjwal@123");
+      
+      const token =  await user.getJWT();
 
-      res.cookie("token", token);
+      res.cookie("token", token ,{
+        expires: new Date(Date.now()+8*36000), 
+      });
       res.send("Login Successfully");
     } else {
       throw new Error("InValid Credentials");
@@ -67,63 +70,20 @@ app.get("/profile",userAuth, async (req, res) => {
 
    
   } catch (err) {
-    res.status(400).send("Error", +err.message);
-  }
-});
-app.get("/user", async (req, res) => {
-  const userEmail = req.body.emailId;
-
-  try {
-    const users = await User.find({ emailId: userEmail });
-    if (userEmail.length === 0) {
-      res.status(404).send("Not Found data");
-    } else {
-      res.send(users);
-    }
-  } catch (err) {
-    res.send("Something went wrong");
+    res.status(400).send("Error ", +err.message);
   }
 });
 
-app.delete("/delete", async (req, res) => {
-  const userId = req.body._Id;
+app.get("/ConnectionReq",userAuth, async (req,res)=>{
+  const user = req.user;
 
-  try {
-    const user = await User.findOneAndDelete({ _Id: userId });
+  res.send(user.firstName+" Has Sent THe req");
+  
 
-    res.status(200).send("Deleted succefully");
-  } catch (err) {
-    res.send("Something went wrong");
-  }
-});
+  
 
-//Update
-app.patch("/update/:userId", async (req, res) => {
-  const { userId, updateData } = req.body;
 
-  try {
-    const updatingFeild = ["firstName", "lastName", "skills", "age", "bio"];
-
-    const isUpdatedAllowed = Object.keys(updateData).every((k) =>
-      updatingFeild.includes(k)
-    );
-
-    if (!isUpdatedAllowed) {
-      throw new Error("Updating is not allowed");
-    }
-
-    const updateUser = await User.findByIdAndUpdate(userId, updateData, {
-      runValidators: true,
-    });
-    if (updateUser) {
-      res.status(200).send("SuccessFully Upadted");
-    } else {
-      res.send("not found");
-    }
-  } catch (err) {
-    res.status(400).send("Something went Wrong");
-  }
-});
+})
 
 // ================= CONNECT DB =================
 connectDb()
