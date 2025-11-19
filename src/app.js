@@ -13,11 +13,15 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 
+
+// Connect to MongoDB and Start   
+
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 
-// Connect to MongoDB and start the server
+
+// Connect to MongoDB and Start the Server
 connectDB()
   .then(() => {
     console.log("✅ Database connection established...");
@@ -28,3 +32,4 @@ connectDB()
   .catch((err) => {
     console.error("❌ Database connection failed!", err);
   });
+          // req.user.firstName + " is " + status + " in " + toUser.firstName,

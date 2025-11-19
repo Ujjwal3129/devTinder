@@ -45,7 +45,10 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
 
       res.cookie("token", token, {
-        expires: new Date(Date.now() + 8 * 3600000),
+         expires: new Date(Date.now() + 24 * 3600000), //in 1day  // 3600000 = milliseconds in 1 hour 
+         // 1 second = 1000 ms
+        //  1 minute = 60 seconds.
+        //  1 hour   = 60 minutes.
       });
       res.send("Login Successful!!!");
     } else {
@@ -55,5 +58,17 @@ authRouter.post("/login", async (req, res) => {
     res.status(400).send("ERROR : " + err.message);
   }
 });
+
+
+authRouter.post("/logout",async (req,res)=>{
+  res.cookie("token",null,{
+    expires: new Date(Date.now()),
+  });
+
+  res.send("Logout SuccessFull");
+});
+
+
+
 
 module.exports = authRouter;

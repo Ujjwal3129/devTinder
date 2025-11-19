@@ -43,11 +43,11 @@ const userSchema = new mongoose.Schema(
     age: {
       type: Number,
       min: 18,
-      //    validate(value){
-      //      if(value<18){
-      //           throw new Error("You are not Elebible");
-      //      }
-      //    }
+        //  validate(value){
+        //    if(value<18){
+        //         throw new Error("You are not Elebible");
+        //    }
+        //  }
     },
     gender: {
       type: String,
@@ -84,6 +84,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
+// User.find({firstName:"Akshay", lastName:"Saini"});
+
+
+userSchema.index({firstName : 1, lastName:  1});
+
 userSchema.methods.getJWT = async function () {
   const user = this;
   var token = await jwt.sign({ _id: user._id }, "Ujjwal@123", {
@@ -98,8 +104,8 @@ userSchema.methods.validatePassword = async function (passwordInputByUser) {
   const passwordHash = user.password;
 
   const isPasswordValid = await bcrypt.compare(passwordInputByUser, passwordHash);
-  
 
+  
   return isPasswordValid;
 };
 
